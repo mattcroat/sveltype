@@ -48,6 +48,16 @@
 			}
 		}
 	}
+
+	function handleKeydown(event: KeyboardEvent) {
+		if (event.code === 'Space') {
+			event.preventDefault()
+			if (currentWordIndex === words.length - 1) return
+			currentWordIndex += 1
+			currentWord = words[currentWordIndex]
+			userInput = ''
+		}
+	}
 </script>
 
 <h1>Sveltetype</h1>
@@ -67,7 +77,7 @@
 	{/each}
 </div>
 
-<input bind:value={userInput} type="text" />
+<input bind:value={userInput} on:keydown={handleKeydown} type="text" />
 
 <style>
 	.words {

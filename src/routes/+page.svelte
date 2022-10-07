@@ -9,6 +9,8 @@
 	let currentWord = words[currentWordIndex]
 	let userInput = ''
 
+	$: updateGameState(userInput)
+
 	function setGameState(words: string[]) {
 		function wordsReducer(state: State, word: string) {
 			const letters: Letter = {}
@@ -24,6 +26,27 @@
 		}
 
 		return words.reduce(wordsReducer, {})
+	}
+
+	function updateGameState(userInput: string) {
+		let current = [...currentWord]
+		let input = [...userInput]
+
+		for (let i = 0; i < currentWord.length; i++) {
+			const currentLetter = currentWord[i]
+
+			if (current[i] === input[i]) {
+				game[currentWord][currentLetter] = 'correct'
+			}
+
+			if (current[i] !== input[i]) {
+				game[currentWord][currentLetter] = 'incorrect'
+			}
+
+			if (!input[i]) {
+				game[currentWord][currentLetter] = null
+			}
+		}
 	}
 </script>
 

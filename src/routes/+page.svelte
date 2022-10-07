@@ -65,11 +65,14 @@
 <div class="words">
 	{#each words as word}
 		<span class="word">
-			{#each word as letter}
+			{#each word as letter, i}
 				{@const correct = game[word][letter] === 'correct'}
 				{@const incorrect = game[word][letter] === 'incorrect'}
+				{@const isCurrentWord = currentWord === word}
+				{@const isCurrentLetter = userInput.length - 1 === i}
+				{@const caret = isCurrentWord && isCurrentLetter}
 
-				<span class="letter" class:correct class:incorrect>
+				<span class="letter" class:caret class:correct class:incorrect>
 					{letter}
 				</span>
 			{/each}
@@ -85,6 +88,7 @@
 	}
 
 	.letter {
+		position: relative;
 		opacity: 0.4;
 		transition: all 0.3s ease;
 	}
@@ -96,5 +100,25 @@
 	.letter.incorrect {
 		color: tomato;
 		opacity: 1;
+	}
+
+	.letter.caret::after {
+		content: ' ';
+		width: 2px;
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		background-color: orangered;
+		animation: caret 1s infinite;
+	}
+
+	@keyframes caret {
+		0%,
+		to {
+			opacity: 0;
+		}
+		50% {
+			opacity: 1;
+		}
 	}
 </style>

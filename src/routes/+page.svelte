@@ -70,7 +70,8 @@
 				{@const incorrect = game[word][letter] === 'incorrect'}
 				{@const isCurrentWord = currentWord === word}
 				{@const isCurrentLetter = userInput.length - 1 === i}
-				{@const caret = isCurrentWord && isCurrentLetter}
+				{@const isWordStart = userInput.length === 0 && i === 0}
+				{@const caret = isCurrentWord && (isWordStart || isCurrentLetter)}
 
 				<span class="letter" class:caret class:correct class:incorrect>
 					{letter}
@@ -107,6 +108,7 @@
 		width: 2px;
 		position: absolute;
 		top: 0;
+		left: 0;
 		bottom: 0;
 		background-color: orangered;
 		animation: caret 1s infinite;

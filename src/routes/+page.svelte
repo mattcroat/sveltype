@@ -10,7 +10,7 @@
 	let previousLetterIndex = null
 
 	let game: Game = 'waiting for input'
-	let seconds = 60
+	let seconds = 30
 	let typedLetter = ''
 
 	let wordsEl: HTMLDivElement
@@ -124,7 +124,7 @@
 
 <style>
 	.time {
-		margin-bottom: 0.4rem;
+		margin-bottom: 0.8rem;
 		font-family: 'Roboto Mono', monospace;
 		font-size: 1.5rem;
 		color: tomato;

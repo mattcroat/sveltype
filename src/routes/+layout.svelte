@@ -18,7 +18,7 @@
 
 <style>
 	h1 {
-		padding: 4rem 0;
+		padding: 2rem 0;
 		font-size: 1.8rem;
 		color: tomato;
 		letter-spacing: 1px;

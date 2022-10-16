@@ -1,6 +1,6 @@
 # Sveltype
 
-[Monkeytype](https://monkeytype.com/) clone made with Svelte.
+Typing speed game made with Svelte inspired by [Monkeytype](https://monkeytype.com/).
 
 ## Developing
 

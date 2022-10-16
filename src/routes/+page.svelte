@@ -1,117 +1,181 @@
 <script lang="ts">
-	type State = Record<string, Record<string, Progress>>
-	type Letter = Record<string, Progress>
-	type Progress = null | 'correct' | 'incorrect'
+	import { onMount } from 'svelte'
 
-	let words = 'The quick brown fox jumps over the lazy dog'.split(' ')
-	let game = setGameState(words)
-	let currentWordIndex = 0
-	let currentWord = words[currentWordIndex]
-	let userInput = ''
+	type Game = 'waiting for input' | 'in progress' | 'game ended'
 
-	$: updateGameState(userInput)
+	let words = 'the quick brown fox jumps over the lazy dog'.split(' ')
 
-	function setGameState(words: string[]) {
-		function wordsReducer(state: State, word: string) {
-			const letters: Letter = {}
+	let wordIndex = 0
+	let letterIndex = 0
+	let previousLetterIndex = null
 
-			for (const letter of [...word]) {
-				letters[letter] = null
-			}
+	let game: Game = 'waiting for input'
+	let seconds = 60
+	let typedLetter = ''
 
-			return {
-				...state,
-				[word]: letters,
-			}
-		}
-
-		return words.reduce(wordsReducer, {})
-	}
-
-	function updateGameState(userInput: string) {
-		let current = [...currentWord]
-		let input = [...userInput]
-
-		for (let i = 0; i < currentWord.length; i++) {
-			const currentLetter = currentWord[i]
-
-			if (current[i] === input[i]) {
-				game[currentWord][currentLetter] = 'correct'
-			}
-
-			if (current[i] !== input[i]) {
-				game[currentWord][currentLetter] = 'incorrect'
-			}
-
-			if (!input[i]) {
-				game[currentWord][currentLetter] = null
-			}
-		}
-	}
+	let wordsEl: HTMLDivElement
+	let inputEl: HTMLInputElement
+	let caretEl: HTMLDivElement
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.code === 'Space') {
 			event.preventDefault()
-			if (currentWordIndex === words.length - 1) return
-			currentWordIndex += 1
-			currentWord = words[currentWordIndex]
-			userInput = ''
+			wordIndex += 1
+			letterIndex = 0
+		}
+
+		if (game === 'waiting for input') {
+			startGame()
 		}
 	}
+
+	function startGame() {
+		setGameState('in progress')
+		setGameValues()
+		setGameTimer()
+	}
+
+	function setGameState(state: Game) {
+		game = state
+	}
+
+	function setGameValues() {
+		wordIndex = 0
+		letterIndex = 0
+		previousLetterIndex = null
+		typedLetter = ''
+	}
+
+	function setGameTimer() {
+		function timer() {
+			if (seconds === 0) {
+				clearInterval(interval)
+				setGameState('game ended')
+			} else {
+				seconds -= 1
+			}
+		}
+
+		const interval = setInterval(timer, 1000)
+	}
+
+	function updateGameState() {
+		const currentLetter = words[wordIndex][letterIndex]
+		const wordLength = words[wordIndex].length - 1
+
+		if (typedLetter === currentLetter) {
+			currentLetterEl().classList.add('correct')
+		} else {
+			currentLetterEl().classList.add('incorrect')
+		}
+
+		// console.log({
+		// 	currentWord: words[wordIndex],
+		// 	currentLetter: words[wordIndex][letterIndex],
+		// })
+
+		const caretTop = currentLetterEl().offsetTop
+		const caretLeft =
+			currentLetterEl().offsetWidth + currentLetterEl().offsetLeft
+		console.log({ caretLeft, caretTop, el: currentLetterEl().innerText })
+
+		caretEl.style.left = `${caretLeft}px`
+		caretEl.style.top = `${caretTop}px`
+
+		if (letterIndex < wordLength) {
+			letterIndex += 1
+		}
+
+		typedLetter = ''
+	}
+
+	function currentLetterEl() {
+		return wordsEl.children[wordIndex].children[letterIndex] as HTMLSpanElement
+	}
+
+	onMount(() => {
+		inputEl.focus()
+	})
 </script>
 
-<h1>Sveltetype</h1>
+<div class="time" style:opacity={game === 'in progress' ? 1 : 0}>
+	{seconds}
+</div>
 
-<div class="words">
+<div bind:this={wordsEl} class="words">
 	{#each words as word}
 		<span class="word">
-			{#each word as letter, i}
-				{@const correct = game[word][letter] === 'correct'}
-				{@const incorrect = game[word][letter] === 'incorrect'}
-				{@const isCurrentWord = currentWord === word}
-				{@const isCurrentLetter = userInput.length - 1 === i}
-				{@const isWordStart = userInput.length === 0 && i === 0}
-				{@const caret = isCurrentWord && (isWordStart || isCurrentLetter)}
-
-				<span class="letter" class:caret class:correct class:incorrect>
-					{letter}
-				</span>
+			{#each word as letter}
+				<span class="letter">{letter}</span>
 			{/each}
 		</span>
 	{/each}
+
+	<div bind:this={caretEl} class="caret" />
 </div>
 
-<input bind:value={userInput} on:keydown={handleKeydown} type="text" />
+<input
+	bind:this={inputEl}
+	bind:value={typedLetter}
+	on:input={updateGameState}
+	on:keydown={handleKeydown}
+	type="text"
+/>
 
 <style>
+	.time {
+		margin-bottom: 0.4rem;
+		font-family: 'Roboto Mono', monospace;
+		font-size: 1.5rem;
+		color: tomato;
+		opacity: 0;
+		transition: all 0.3s ease;
+	}
+
 	.words {
-		font-size: 2rem;
+		--lines: 3;
+		--line-height: 1em;
+		--gap: 0.4em;
+
+		width: 100%;
+		max-height: calc(var(--line-height) * var(--lines) * 1em);
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--gap);
+		position: relative;
+		padding-bottom: 0.2em;
+		font-family: 'Roboto Mono', monospace;
+		font-size: 1.5em;
+		line-height: var(--line-height);
+		overflow: hidden;
 	}
 
 	.letter {
-		position: relative;
 		opacity: 0.4;
 		transition: all 0.3s ease;
 	}
 
-	.letter.correct {
+	.letter:global(.correct) {
 		opacity: 1;
 	}
 
-	.letter.incorrect {
+	.letter:global(.incorrect) {
 		color: tomato;
 		opacity: 1;
 	}
 
-	.letter.caret::after {
-		content: ' ';
-		width: 2px;
+	input {
 		position: absolute;
+		opacity: 0;
+	}
+
+	.caret {
+		position: absolute;
+		height: 1.8rem;
 		top: 0;
-		left: 0;
-		bottom: 0;
-		background-color: orangered;
+		border-right: 1px solid tomato;
 		animation: caret 1s infinite;
+		transition: all 0.3s ease;
 	}
 
 	@keyframes caret {

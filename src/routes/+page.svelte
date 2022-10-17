@@ -3,8 +3,7 @@
 
 	type Game = 'waiting for input' | 'in progress' | 'game ended'
 
-	let words = 'the quick brown fox jumps over the lazy dog'.split(' ')
-
+	let words = ''
 	let wordIndex = 0
 	let letterIndex = 0
 	let previousLetterIndex = null
@@ -93,8 +92,18 @@
 		return wordsEl.children[wordIndex].children[letterIndex] as HTMLSpanElement
 	}
 
-	onMount(() => {
+	async function getWords(limit: number) {
+		const response = await fetch(`/api/words?limit=${limit}`)
+		words = await response.json()
+	}
+
+	function focusInput() {
 		inputEl.focus()
+	}
+
+	onMount(async () => {
+		getWords(100)
+		focusInput()
 	})
 </script>
 

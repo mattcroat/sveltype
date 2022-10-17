@@ -18,8 +18,7 @@
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.code === 'Space') {
 			event.preventDefault()
-			wordIndex += 1
-			letterIndex = 0
+			nextWord()
 		}
 
 		if (game === 'waiting for input') {
@@ -76,6 +75,12 @@
 		if (typedLetter !== currentLetter) {
 			letterEl.classList.add('incorrect')
 		}
+	}
+
+	function nextWord() {
+		wordIndex += 1
+		letterIndex = 0
+		moveCaret()
 	}
 
 	function nextLetter() {

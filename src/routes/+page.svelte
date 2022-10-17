@@ -142,21 +142,20 @@
 	}
 
 	.words {
-		--lines: 3;
 		--line-height: 1em;
-		--gap: 0.4em;
+		--lines: 3;
 
 		width: 100%;
-		max-height: calc(var(--line-height) * var(--lines) * 1em);
+		max-height: calc(var(--line-height) * var(--lines) * 1.4);
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--gap);
+		gap: 0.6em;
 		position: relative;
-		padding-bottom: 0.2em;
 		font-family: 'Roboto Mono', monospace;
-		font-size: 1.5em;
+		font-size: 1.5rem;
 		line-height: var(--line-height);
 		overflow: hidden;
+		user-select: none;
 	}
 
 	.letter {
@@ -165,7 +164,7 @@
 	}
 
 	.letter:global(.correct) {
-		opacity: 1;
+		opacity: 0.8;
 	}
 
 	.letter:global(.incorrect) {

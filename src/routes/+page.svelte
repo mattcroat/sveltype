@@ -6,7 +6,6 @@
 	let words = ''
 	let wordIndex = 0
 	let letterIndex = 0
-	let previousLetterIndex = null
 
 	let game: Game = 'waiting for input'
 	let seconds = 30
@@ -41,51 +40,60 @@
 	function setGameValues() {
 		wordIndex = 0
 		letterIndex = 0
-		previousLetterIndex = null
 		typedLetter = ''
 	}
 
 	function setGameTimer() {
-		function timer() {
+		function gameTimer() {
 			if (seconds === 0) {
 				clearInterval(interval)
 				setGameState('game ended')
-			} else {
-				seconds -= 1
 			}
+
+			seconds -= 1
 		}
 
-		const interval = setInterval(timer, 1000)
+		const interval = setInterval(gameTimer, 1000)
 	}
 
-	function updateGameState() {
+	function moveCaret() {
+		const { offsetTop, offsetLeft, offsetWidth } = currentLetterEl()
+
+		caretEl.style.left = `${offsetLeft + offsetWidth}px`
+		caretEl.style.top = `${offsetTop}px`
+	}
+
+	function checkLetter() {
 		const currentLetter = words[wordIndex][letterIndex]
-		const wordLength = words[wordIndex].length - 1
 
 		if (typedLetter === currentLetter) {
 			currentLetterEl().classList.add('correct')
-		} else {
+		}
+
+		if (typedLetter !== currentLetter) {
 			currentLetterEl().classList.add('incorrect')
 		}
+	}
 
-		// console.log({
-		// 	currentWord: words[wordIndex],
-		// 	currentLetter: words[wordIndex][letterIndex],
-		// })
+	function nextLetter() {
+		const currentWordLength = words[wordIndex].length - 1
 
-		const caretTop = currentLetterEl().offsetTop
-		const caretLeft =
-			currentLetterEl().offsetWidth + currentLetterEl().offsetLeft
-		console.log({ caretLeft, caretTop, el: currentLetterEl().innerText })
+		console.log({ letterIndex, currentWordLength })
 
-		caretEl.style.left = `${caretLeft}px`
-		caretEl.style.top = `${caretTop}px`
-
-		if (letterIndex < wordLength) {
+		if (letterIndex < currentWordLength) {
 			letterIndex += 1
 		}
+	}
 
+	function resetLetter() {
 		typedLetter = ''
+	}
+
+	function updateGameState() {
+		moveCaret()
+		checkLetter()
+		nextLetter()
+		resetLetter()
 	}
 
 	function currentLetterEl() {
@@ -102,6 +110,7 @@
 	}
 
 	onMount(async () => {
+		setGameState('waiting for input')
 		getWords(100)
 		focusInput()
 	})

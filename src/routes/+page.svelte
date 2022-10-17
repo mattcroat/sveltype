@@ -85,6 +85,18 @@
 		}
 	}
 
+	function updateLine() {
+		const wordEl = currentWordEl()
+		const currentWord = wordEl.getBoundingClientRect()
+		const currentWordHeight = wordEl.clientHeight
+		const wordY = currentWord.y + currentWordHeight
+		const thresholdY = 460
+
+		if (wordY > thresholdY) {
+			wordEl.scrollIntoView({ block: 'center' })
+		}
+	}
+
 	function resetLetter() {
 		typedLetter = ''
 	}
@@ -93,7 +105,12 @@
 		moveCaret()
 		checkLetter()
 		nextLetter()
+		updateLine()
 		resetLetter()
+	}
+
+	function currentWordEl() {
+		return wordsEl.children[wordIndex]
 	}
 
 	function currentLetterEl() {

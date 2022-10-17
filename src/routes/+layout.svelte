@@ -18,19 +18,21 @@
 
 <style>
 	h1 {
-		padding: 2rem 0;
 		font-size: 1.8rem;
-		color: tomato;
+		color: hsl(220 20% 80%);
 		letter-spacing: 1px;
 	}
 
 	.layout {
 		height: 100%;
 		display: grid;
-		grid-template-rows: repeat(2, 1fr);
+		grid-template-rows: auto 1fr;
+		align-items: center;
+		padding: 2rem;
 	}
 
 	main {
-		margin-inline: auto;
+		display: grid;
+		grid-template-rows: 1fr auto 1fr;
 	}
 </style>

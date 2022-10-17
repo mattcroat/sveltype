@@ -59,9 +59,17 @@
 
 	function moveCaret() {
 		const { offsetTop, offsetLeft, offsetWidth } = currentLetterEl()
+		const currentWordLength = words[wordIndex].length - 1
+		const caretOffsetTop = 4
 
-		caretEl.style.left = `${offsetLeft + offsetWidth}px`
-		caretEl.style.top = `${offsetTop}px`
+		if (letterIndex !== currentWordLength) {
+			caretEl.style.left = `${offsetLeft}px`
+			caretEl.style.top = `${offsetTop + caretOffsetTop}px`
+		}
+
+		if (letterIndex === currentWordLength) {
+			caretEl.style.left = `${offsetLeft + offsetWidth}px`
+		}
 	}
 
 	function checkLetter() {
@@ -106,11 +114,11 @@
 	}
 
 	function updateGameState() {
-		moveCaret()
 		checkLetter()
 		nextLetter()
 		updateLine()
 		resetLetter()
+		moveCaret()
 	}
 
 	function currentWordEl() {
@@ -219,9 +227,14 @@
 		position: absolute;
 		height: 1.8rem;
 		top: 0;
+		left: 0;
 		border-right: 1px solid tomato;
 		animation: caret 1s infinite;
-		transition: all 0.3s ease;
+		transition: all 0.2s ease;
+	}
+
+	[data-state='in progress'] .caret {
+		animation: none;
 	}
 
 	@keyframes caret {

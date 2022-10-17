@@ -45,12 +45,14 @@
 
 	function setGameTimer() {
 		function gameTimer() {
+			if (seconds > 0) {
+				seconds -= 1
+			}
+
 			if (seconds === 0) {
 				clearInterval(interval)
 				setGameState('game ended')
 			}
-
-			seconds -= 1
 		}
 
 		const interval = setInterval(gameTimer, 1000)
@@ -87,7 +89,7 @@
 	function updateLine() {
 		const wordEl = currentWordEl()
 		const wordPosition = wordEl.getBoundingClientRect()
-		const thresholdY = 440
+		const thresholdY = 380
 
 		if (wordPosition.y > thresholdY) {
 			wordEl.scrollIntoView({ block: 'center' })
@@ -124,44 +126,52 @@
 	}
 
 	onMount(async () => {
-		setGameState('waiting for input')
 		getWords(100)
 		focusInput()
 	})
 </script>
 
-<div class="time" style:opacity={game === 'in progress' ? 1 : 0}>
-	{seconds}
+<div class="game" data-state={game}>
+	<input
+		bind:this={inputEl}
+		bind:value={typedLetter}
+		on:input={updateGameState}
+		on:keydown={handleKeydown}
+		type="text"
+	/>
+
+	<div class="time">{seconds}</div>
+
+	<div bind:this={wordsEl} class="words">
+		{#each words as word}
+			<span class="word">
+				{#each word as letter}
+					<span class="letter">{letter}</span>
+				{/each}
+			</span>
+		{/each}
+
+		<div bind:this={caretEl} class="caret" />
+	</div>
 </div>
-
-<div bind:this={wordsEl} class="words">
-	{#each words as word}
-		<span class="word">
-			{#each word as letter}
-				<span class="letter">{letter}</span>
-			{/each}
-		</span>
-	{/each}
-
-	<div bind:this={caretEl} class="caret" />
-</div>
-
-<input
-	bind:this={inputEl}
-	bind:value={typedLetter}
-	on:input={updateGameState}
-	on:keydown={handleKeydown}
-	type="text"
-/>
 
 <style>
+	.game {
+		position: relative;
+	}
+
 	.time {
-		margin-bottom: 0.8rem;
+		position: absolute;
+		top: -48px;
 		font-family: 'Roboto Mono', monospace;
 		font-size: 1.5rem;
 		color: tomato;
 		opacity: 0;
 		transition: all 0.3s ease;
+	}
+
+	[data-state='in progress'] .time {
+		opacity: 1;
 	}
 
 	.words {

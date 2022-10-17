@@ -30,9 +30,4 @@
 		align-items: center;
 		padding: 2rem;
 	}
-
-	main {
-		display: grid;
-		grid-template-rows: 1fr auto 1fr;
-	}
 </style>

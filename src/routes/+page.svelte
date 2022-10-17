@@ -65,20 +65,19 @@
 
 	function checkLetter() {
 		const currentLetter = words[wordIndex][letterIndex]
+		const letterEl = currentLetterEl()
 
 		if (typedLetter === currentLetter) {
-			currentLetterEl().classList.add('correct')
+			letterEl.classList.add('correct')
 		}
 
 		if (typedLetter !== currentLetter) {
-			currentLetterEl().classList.add('incorrect')
+			letterEl.classList.add('incorrect')
 		}
 	}
 
 	function nextLetter() {
 		const currentWordLength = words[wordIndex].length - 1
-
-		console.log({ letterIndex, currentWordLength })
 
 		if (letterIndex < currentWordLength) {
 			letterIndex += 1

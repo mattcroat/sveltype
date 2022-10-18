@@ -221,42 +221,46 @@
 	</div>
 {/if}
 
-<style>
+<style lang="scss">
 	.results {
 		font-family: 'Roboto Mono', monospace;
-	}
 
-	.results .title {
-		font-size: 2rem;
-		color: hsl(220 20% 80%);
-	}
+		.title {
+			font-size: 2rem;
+			color: hsl(220 20% 80%);
+		}
 
-	.results .score {
-		font-size: 4rem;
-		color: tomato;
+		.score {
+			font-size: 4rem;
+			color: tomato;
+		}
 	}
 
 	.game {
 		position: relative;
-	}
 
-	.input {
-		position: absolute;
-		opacity: 0;
-	}
+		.input {
+			position: absolute;
+			opacity: 0;
+		}
 
-	.time {
-		position: absolute;
-		top: -48px;
-		font-family: 'Roboto Mono', monospace;
-		font-size: 1.5rem;
-		color: tomato;
-		opacity: 0;
-		transition: all 0.3s ease;
-	}
+		.time {
+			position: absolute;
+			top: -48px;
+			font-family: 'Roboto Mono', monospace;
+			font-size: 1.5rem;
+			color: tomato;
+			opacity: 0;
+			transition: all 0.3s ease;
+		}
 
-	[data-state='in progress'] .time {
-		opacity: 1;
+		&[data-state='in progress'] .time {
+			opacity: 1;
+		}
+
+		&[data-state='in progress'] .caret {
+			animation: none;
+		}
 	}
 
 	.words {
@@ -274,33 +278,29 @@
 		line-height: var(--line-height);
 		overflow: hidden;
 		user-select: none;
-	}
 
-	.letter {
-		opacity: 0.4;
-		transition: all 0.3s ease;
-	}
+		.letter {
+			opacity: 0.4;
+			transition: all 0.3s ease;
 
-	.letter:global(.correct) {
-		opacity: 0.8;
-	}
+			&:global(.correct) {
+				opacity: 0.8;
+			}
 
-	.letter:global(.incorrect) {
-		color: tomato;
-		opacity: 1;
-	}
+			&:global(.incorrect) {
+				color: tomato;
+				opacity: 1;
+			}
+		}
 
-	.caret {
-		position: absolute;
-		height: 1.8rem;
-		top: 0;
-		border-right: 1px solid tomato;
-		animation: caret 1s infinite;
-		transition: all 0.2s ease;
-	}
-
-	[data-state='in progress'] .caret {
-		animation: none;
+		.caret {
+			position: absolute;
+			height: 1.8rem;
+			top: 0;
+			border-right: 1px solid tomato;
+			animation: caret 1s infinite;
+			transition: all 0.2s ease;
+		}
 	}
 
 	@keyframes caret {

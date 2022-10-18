@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 
-	type Game = 'waiting for input' | 'in progress' | 'game ended'
+	type Game = 'waiting for input' | 'in progress' | 'game over'
 
 	let words = ''
 	let wordIndex = 0
@@ -50,7 +50,7 @@
 
 			if (seconds === 0) {
 				clearInterval(interval)
-				setGameState('game ended')
+				setGameState('game over')
 			}
 		}
 

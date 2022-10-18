@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
 	import { blur } from 'svelte/transition'
+	import { tweened } from 'svelte/motion'
 
 	/*
 		Types
@@ -21,9 +22,10 @@
 	let wordIndex = 0
 	let letterIndex = 0
 	let correctLetters = 0
-	let wordsPerMinute = 0
-	let accuracy = 0
 	let toggleReset = false
+
+	let wordsPerMinute = tweened(0, { delay: 300, duration: 1000 })
+	let accuracy = tweened(0, { delay: 1300, duration: 1000 })
 
 	let wordsEl: HTMLDivElement
 	let inputEl: HTMLInputElement
@@ -175,8 +177,8 @@
 	}
 
 	function getResults() {
-		wordsPerMinute = getWordsPerMinute()
-		accuracy = getAccuracy()
+		$wordsPerMinute = getWordsPerMinute()
+		$accuracy = getAccuracy()
 	}
 
 	/*
@@ -184,18 +186,20 @@
 	*/
 
 	function resetGame() {
+		toggleReset = !toggleReset
+
 		setGameState('waiting for input')
 		getWords(100)
 		focusInput()
+
 		seconds = 30
 		typedLetter = ''
 		wordIndex = 0
 		letterIndex = 0
 		correctLetters = 0
-		wordsPerMinute = 0
-		accuracy = 0
 
-		toggleReset = !toggleReset
+		$wordsPerMinute = 0
+		$accuracy = 0
 	}
 
 	/*
@@ -284,12 +288,12 @@
 	<div in:blur class="results">
 		<div>
 			<p class="title">wpm</p>
-			<p class="score">{wordsPerMinute}</p>
+			<p class="score">{Math.trunc($wordsPerMinute)}</p>
 		</div>
 
 		<div>
 			<p class="title">accuracy</p>
-			<p class="score">{accuracy}%</p>
+			<p class="score">{Math.trunc($accuracy)}%</p>
 		</div>
 	</div>
 {/if}

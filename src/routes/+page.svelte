@@ -20,33 +20,7 @@
 	let inputEl: HTMLInputElement
 	let caretEl: HTMLDivElement
 
-	// https://www.speedtypingonline.com/typing-equations
-	// words per minute = (correct / 5) / time
-	// accuracy = (correct / total) * 100%
-
-	function getWordsPerMinute() {
-		const word = 5
-		const minutes = 0.5
-		return Math.floor(correctLetters / word / minutes)
-	}
-
-	function getTotalLetters(words: Word[]) {
-		return words.reduce((count, word) => count + word.length, 0)
-	}
-
-	function getAccuracy() {
-		const totalLetters = getTotalLetters(words)
-		return Math.floor((correctLetters / totalLetters) * 100)
-	}
-
-	function increaseScore() {
-		correctLetters += 1
-	}
-
-	function getResults() {
-		wordsPerMinute = getWordsPerMinute()
-		accuracy = getAccuracy()
-	}
+	/* listen for key press */
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.code === 'Space') {
@@ -59,6 +33,14 @@
 			startGame()
 		}
 	}
+
+	function nextWord() {
+		wordIndex += 1
+		letterIndex = 0
+		moveCaret()
+	}
+
+	/* start game */
 
 	function startGame() {
 		setGameState('in progress')
@@ -92,19 +74,14 @@
 		const interval = setInterval(gameTimer, 1000)
 	}
 
-	function moveCaret() {
-		const { offsetTop, offsetLeft, offsetWidth } = currentLetterEl()
-		const currentWordLength = words[wordIndex].length - 1
-		const caretOffsetTop = 4
+	/* evaluate user input */
 
-		if (letterIndex !== currentWordLength) {
-			caretEl.style.top = `${offsetTop + caretOffsetTop}px`
-			caretEl.style.left = `${offsetLeft}px`
-		}
-
-		if (letterIndex === currentWordLength) {
-			caretEl.style.left = `${offsetLeft + offsetWidth}px`
-		}
+	function updateGameState() {
+		checkLetter()
+		nextLetter()
+		updateLine()
+		resetLetter()
+		moveCaret()
 	}
 
 	function checkLetter() {
@@ -121,10 +98,8 @@
 		}
 	}
 
-	function nextWord() {
-		wordIndex += 1
-		letterIndex = 0
-		moveCaret()
+	function increaseScore() {
+		correctLetters += 1
 	}
 
 	function nextLetter() {
@@ -149,13 +124,44 @@
 		typedLetter = ''
 	}
 
-	function updateGameState() {
-		checkLetter()
-		nextLetter()
-		updateLine()
-		resetLetter()
-		moveCaret()
+	function moveCaret() {
+		const { offsetTop, offsetLeft, offsetWidth } = currentLetterEl()
+		const currentWordLength = words[wordIndex].length - 1
+		const caretOffsetTop = 4
+
+		if (letterIndex !== currentWordLength) {
+			caretEl.style.top = `${offsetTop + caretOffsetTop}px`
+			caretEl.style.left = `${offsetLeft}px`
+		}
+
+		if (letterIndex === currentWordLength) {
+			caretEl.style.left = `${offsetLeft + offsetWidth}px`
+		}
 	}
+
+	/* game over */
+
+	// https://www.speedtypingonline.com/typing-equations
+	// words per minute = (correct / 5) / time
+	// accuracy = (correct / total) * 100%
+
+	function getWordsPerMinute() {
+		const word = 5
+		const minutes = 0.5
+		return Math.floor(correctLetters / word / minutes)
+	}
+
+	function getAccuracy() {
+		const totalLetters = getTotalLetters(words)
+		return Math.floor((correctLetters / totalLetters) * 100)
+	}
+
+	function getResults() {
+		wordsPerMinute = getWordsPerMinute()
+		accuracy = getAccuracy()
+	}
+
+	/* helpers */
 
 	function currentWordEl() {
 		return wordsEl.children[wordIndex] as HTMLSpanElement
@@ -170,13 +176,13 @@
 		words = await response.json()
 	}
 
-	function focusInput() {
-		inputEl.focus()
+	function getTotalLetters(words: Word[]) {
+		return words.reduce((count, word) => count + word.length, 0)
 	}
 
 	onMount(async () => {
 		getWords(100)
-		focusInput()
+		inputEl.focus()
 	})
 </script>
 

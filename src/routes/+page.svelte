@@ -2,8 +2,12 @@
 	import { onMount } from 'svelte'
 	import { blur } from 'svelte/transition'
 
+	/* types */
+
 	type Game = 'waiting for input' | 'in progress' | 'game over'
 	type Word = string
+
+	/* game state */
 
 	let game: Game = 'waiting for input'
 	let seconds = 30
@@ -25,8 +29,10 @@
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.code === 'Space') {
 			event.preventDefault()
-			nextWord()
-			increaseScore()
+
+			if (game === 'in progress') {
+				nextWord()
+			}
 		}
 
 		if (game === 'waiting for input') {
@@ -35,9 +41,15 @@
 	}
 
 	function nextWord() {
-		wordIndex += 1
-		letterIndex = 0
-		moveCaret()
+		const isNotFirstLetter = letterIndex !== 0
+		const isOneLetterWord = words[wordIndex].length === 1
+
+		if (isNotFirstLetter || isOneLetterWord) {
+			wordIndex += 1
+			letterIndex = 0
+			increaseScore()
+			moveCaret()
+		}
 	}
 
 	/* start game */

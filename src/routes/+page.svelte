@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte'
+	import { blur } from 'svelte/transition'
 
 	type Game = 'waiting for input' | 'in progress' | 'game over'
 	type Word = string
@@ -139,8 +140,6 @@
 		const wordPosition = wordEl.getBoundingClientRect()
 		const thresholdY = 402
 
-		console.log(wordPosition.y)
-
 		if (wordPosition.y > thresholdY) {
 			wordEl.scrollIntoView({ block: 'center' })
 		}
@@ -209,7 +208,7 @@
 {/if}
 
 {#if game === 'game over'}
-	<div class="results">
+	<div in:blur class="results">
 		<div>
 			<p class="title">wpm</p>
 			<p class="score">{wordsPerMinute}</p>

@@ -2,23 +2,56 @@
 	import { onMount } from 'svelte'
 
 	type Game = 'waiting for input' | 'in progress' | 'game over'
-
-	let words = ''
-	let wordIndex = 0
-	let letterIndex = 0
+	type Word = string
 
 	let game: Game = 'waiting for input'
 	let seconds = 30
 	let typedLetter = ''
 
+	let words: Word[] = []
+	let wordIndex = 0
+	let letterIndex = 0
+	let correctLetters = 0
+	let wordsPerMinute = 0
+	let accuracy = 0
+
 	let wordsEl: HTMLDivElement
 	let inputEl: HTMLInputElement
 	let caretEl: HTMLDivElement
+
+	// https://www.speedtypingonline.com/typing-equations
+	// words per minute = (correct / 5) / time
+	// accuracy = (correct / total) * 100%
+
+	function getWordsPerMinute() {
+		const word = 5
+		const minutes = 0.5
+		return Math.floor(correctLetters / word / minutes)
+	}
+
+	function getTotalLetters(words: Word[]) {
+		return words.reduce((count, word) => count + word.length, 0)
+	}
+
+	function getAccuracy() {
+		const totalLetters = getTotalLetters(words)
+		return Math.floor((correctLetters / totalLetters) * 100)
+	}
+
+	function increaseScore() {
+		correctLetters += 1
+	}
+
+	function getResults() {
+		wordsPerMinute = getWordsPerMinute()
+		accuracy = getAccuracy()
+	}
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.code === 'Space') {
 			event.preventDefault()
 			nextWord()
+			increaseScore()
 		}
 
 		if (game === 'waiting for input') {
@@ -51,6 +84,7 @@
 			if (seconds === 0) {
 				clearInterval(interval)
 				setGameState('game over')
+				getResults()
 			}
 		}
 
@@ -63,8 +97,8 @@
 		const caretOffsetTop = 4
 
 		if (letterIndex !== currentWordLength) {
-			caretEl.style.left = `${offsetLeft}px`
 			caretEl.style.top = `${offsetTop + caretOffsetTop}px`
+			caretEl.style.left = `${offsetLeft}px`
 		}
 
 		if (letterIndex === currentWordLength) {
@@ -78,6 +112,7 @@
 
 		if (typedLetter === currentLetter) {
 			letterEl.classList.add('correct')
+			increaseScore()
 		}
 
 		if (typedLetter !== currentLetter) {
@@ -102,7 +137,9 @@
 	function updateLine() {
 		const wordEl = currentWordEl()
 		const wordPosition = wordEl.getBoundingClientRect()
-		const thresholdY = 400
+		const thresholdY = 402
+
+		console.log(wordPosition.y)
 
 		if (wordPosition.y > thresholdY) {
 			wordEl.scrollIntoView({ block: 'center' })
@@ -122,7 +159,7 @@
 	}
 
 	function currentWordEl() {
-		return wordsEl.children[wordIndex]
+		return wordsEl.children[wordIndex] as HTMLSpanElement
 	}
 
 	function currentLetterEl() {
@@ -144,33 +181,69 @@
 	})
 </script>
 
-<div class="game" data-state={game}>
-	<input
-		bind:this={inputEl}
-		bind:value={typedLetter}
-		on:input={updateGameState}
-		on:keydown={handleKeydown}
-		type="text"
-	/>
+{#if game !== 'game over'}
+	<div class="game" data-state={game}>
+		<input
+			bind:this={inputEl}
+			bind:value={typedLetter}
+			on:input={updateGameState}
+			on:keydown={handleKeydown}
+			class="input"
+			type="text"
+		/>
 
-	<div class="time">{seconds}</div>
+		<div class="time">{seconds}</div>
 
-	<div bind:this={wordsEl} class="words">
-		{#each words as word}
-			<span class="word">
-				{#each word as letter}
-					<span class="letter">{letter}</span>
-				{/each}
-			</span>
-		{/each}
+		<div bind:this={wordsEl} class="words">
+			{#each words as word}
+				<span class="word">
+					{#each word as letter}
+						<span class="letter">{letter}</span>
+					{/each}
+				</span>
+			{/each}
 
-		<div bind:this={caretEl} class="caret" />
+			<div bind:this={caretEl} class="caret" />
+		</div>
 	</div>
-</div>
+{/if}
+
+{#if game === 'game over'}
+	<div class="results">
+		<div>
+			<p class="title">wpm</p>
+			<p class="score">{wordsPerMinute}</p>
+		</div>
+
+		<div>
+			<p class="title">accuracy</p>
+			<p class="score">{accuracy}%</p>
+		</div>
+	</div>
+{/if}
 
 <style>
+	.results {
+		font-family: 'Roboto Mono', monospace;
+	}
+
+	.results .title {
+		font-size: 2rem;
+		color: hsl(220 20% 80%);
+	}
+
+	.results .score {
+		font-size: 4rem;
+		color: tomato;
+	}
+
 	.game {
 		position: relative;
+	}
+
+	.input {
+		position: absolute;
+		opacity: 0;
 	}
 
 	.time {
@@ -218,16 +291,10 @@
 		opacity: 1;
 	}
 
-	input {
-		position: absolute;
-		opacity: 0;
-	}
-
 	.caret {
 		position: absolute;
 		height: 1.8rem;
 		top: 0;
-		left: 0;
 		border-right: 1px solid tomato;
 		animation: caret 1s infinite;
 		transition: all 0.2s ease;

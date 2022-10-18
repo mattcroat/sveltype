@@ -2,12 +2,16 @@
 	import { onMount } from 'svelte'
 	import { blur } from 'svelte/transition'
 
-	/* types */
+	/*
+		Types
+	*/
 
 	type Game = 'waiting for input' | 'in progress' | 'game over'
 	type Word = string
 
-	/* game state */
+	/* 
+		Game state
+	*/
 
 	let game: Game = 'waiting for input'
 	let seconds = 30
@@ -19,12 +23,15 @@
 	let correctLetters = 0
 	let wordsPerMinute = 0
 	let accuracy = 0
+	let toggleReset = false
 
 	let wordsEl: HTMLDivElement
 	let inputEl: HTMLInputElement
 	let caretEl: HTMLDivElement
 
-	/* listen for key press */
+	/*
+		Listen for key press
+	*/
 
 	function handleKeydown(event: KeyboardEvent) {
 		if (event.code === 'Space') {
@@ -52,22 +59,17 @@
 		}
 	}
 
-	/* start game */
+	/*
+		Start game
+	*/
 
 	function startGame() {
 		setGameState('in progress')
-		setGameValues()
 		setGameTimer()
 	}
 
 	function setGameState(state: Game) {
 		game = state
-	}
-
-	function setGameValues() {
-		wordIndex = 0
-		letterIndex = 0
-		typedLetter = ''
 	}
 
 	function setGameTimer() {
@@ -86,7 +88,9 @@
 		const interval = setInterval(gameTimer, 1000)
 	}
 
-	/* evaluate user input */
+	/*
+		Evaluate user input
+	*/
 
 	function updateGameState() {
 		checkLetter()
@@ -151,7 +155,9 @@
 		}
 	}
 
-	/* game over */
+	/*
+		Game over
+	*/
 
 	// https://www.speedtypingonline.com/typing-equations
 	// words per minute = (correct / 5) / time
@@ -173,15 +179,28 @@
 		accuracy = getAccuracy()
 	}
 
-	/* helpers */
+	/*
+		Game reset
+	*/
 
-	function currentWordEl() {
-		return wordsEl.children[wordIndex] as HTMLSpanElement
+	function resetGame() {
+		setGameState('waiting for input')
+		getWords(100)
+		focusInput()
+		seconds = 30
+		typedLetter = ''
+		wordIndex = 0
+		letterIndex = 0
+		correctLetters = 0
+		wordsPerMinute = 0
+		accuracy = 0
+
+		toggleReset = !toggleReset
 	}
 
-	function currentLetterEl() {
-		return wordsEl.children[wordIndex].children[letterIndex] as HTMLSpanElement
-	}
+	/*
+		Helpers
+	*/
 
 	async function getWords(limit: number) {
 		const response = await fetch(`/api/words?limit=${limit}`)
@@ -192,9 +211,23 @@
 		return words.reduce((count, word) => count + word.length, 0)
 	}
 
+	function currentWordEl() {
+		return wordsEl.children[wordIndex] as HTMLSpanElement
+	}
+
+	function currentLetterEl() {
+		return wordsEl.children[wordIndex].children[letterIndex] as HTMLSpanElement
+	}
+
+	function focusInput() {
+		inputEl.focus()
+	}
+
+	/* get words and focus input on mount */
+
 	onMount(async () => {
 		getWords(100)
-		inputEl.focus()
+		focusInput()
 	})
 </script>
 
@@ -211,16 +244,38 @@
 
 		<div class="time">{seconds}</div>
 
-		<div bind:this={wordsEl} class="words">
-			{#each words as word}
-				<span class="word">
-					{#each word as letter}
-						<span class="letter">{letter}</span>
-					{/each}
-				</span>
-			{/each}
+		{#key toggleReset}
+			<div in:blur|local bind:this={wordsEl} class="words">
+				{#each words as word (word)}
+					<span class="word">
+						{#each word as letter}
+							<span class="letter">{letter}</span>
+						{/each}
+					</span>
+				{/each}
 
-			<div bind:this={caretEl} class="caret" />
+				<div bind:this={caretEl} class="caret" />
+			</div>
+		{/key}
+
+		<div class="reset">
+			<button on:click={resetGame} aria-label="reset">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					viewBox="0 0 24 24"
+					width="24"
+					height="24"
+					stroke-width="1.5"
+					stroke="currentColor"
+					fill="none"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						d="M15 15l6-6m0 0l-6-6m6 6H9a6 6 0 000 12h3"
+					/>
+				</svg>
+			</button>
 		</div>
 	</div>
 {/if}
@@ -278,6 +333,26 @@
 
 		&[data-state='in progress'] .caret {
 			animation: none;
+		}
+
+		.reset {
+			width: 100%;
+			display: grid;
+			justify-content: center;
+			margin-top: 2rem;
+
+			button {
+				color: inherit;
+				background: none;
+				border: none;
+				opacity: 0.4;
+				transition: all 0.3s ease;
+
+				&:hover {
+					cursor: pointer;
+					opacity: 1;
+				}
+			}
 		}
 	}
 

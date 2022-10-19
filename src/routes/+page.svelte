@@ -190,7 +190,6 @@
 
 		setGameState('waiting for input')
 		getWords(100)
-		focusInput()
 
 		seconds = 30
 		typedLetter = ''
@@ -227,7 +226,7 @@
 		inputEl.focus()
 	}
 
-	/* get words and focus input on mount */
+	/* Get words and focus input when you load the page */
 
 	onMount(async () => {
 		getWords(100)
@@ -295,24 +294,12 @@
 			<p class="title">accuracy</p>
 			<p class="score">{Math.trunc($accuracy)}%</p>
 		</div>
+
+		<button on:click={resetGame} class="play">play again</button>
 	</div>
 {/if}
 
 <style lang="scss">
-	.results {
-		font-family: 'Roboto Mono', monospace;
-
-		.title {
-			font-size: 2rem;
-			color: hsl(220 20% 80%);
-		}
-
-		.score {
-			font-size: 4rem;
-			color: tomato;
-		}
-	}
-
 	.game {
 		position: relative;
 
@@ -324,9 +311,8 @@
 		.time {
 			position: absolute;
 			top: -48px;
-			font-family: 'Roboto Mono', monospace;
 			font-size: 1.5rem;
-			color: tomato;
+			color: var(--primary);
 			opacity: 0;
 			transition: all 0.3s ease;
 		}
@@ -344,19 +330,6 @@
 			display: grid;
 			justify-content: center;
 			margin-top: 2rem;
-
-			button {
-				color: inherit;
-				background: none;
-				border: none;
-				opacity: 0.4;
-				transition: all 0.3s ease;
-
-				&:hover {
-					cursor: pointer;
-					opacity: 1;
-				}
-			}
 		}
 	}
 
@@ -370,7 +343,6 @@
 		flex-wrap: wrap;
 		gap: 0.6em;
 		position: relative;
-		font-family: 'Roboto Mono', monospace;
 		font-size: 1.5rem;
 		line-height: var(--line-height);
 		overflow: hidden;
@@ -385,7 +357,7 @@
 			}
 
 			&:global([data-letter='incorrect']) {
-				color: tomato;
+				color: var(--primary);
 				opacity: 1;
 			}
 		}
@@ -394,9 +366,25 @@
 			position: absolute;
 			height: 1.8rem;
 			top: 0;
-			border-right: 1px solid tomato;
+			border-right: 1px solid var(--primary);
 			animation: caret 1s infinite;
 			transition: all 0.2s ease;
+		}
+	}
+
+	.results {
+		.title {
+			font-size: 2rem;
+			color: var(--fg-200);
+		}
+
+		.score {
+			font-size: 4rem;
+			color: var(--primary);
+		}
+
+		.play {
+			margin-top: 1rem;
 		}
 	}
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '../app.css'
+	import '../styles/app.scss'
 </script>
 
 <svelte:head>
@@ -16,11 +16,12 @@
 	</main>
 </div>
 
-<style>
+<style lang="scss">
 	h1 {
+		font-family: 'Lexend Deca', sans-serif;
 		font-size: 1.8rem;
-		color: hsl(220 20% 80%);
-		letter-spacing: 1px;
+		color: var(--fg-200);
+		letter-spacing: 2px;
 	}
 
 	.layout {

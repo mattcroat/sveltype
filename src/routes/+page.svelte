@@ -107,12 +107,12 @@
 		const letterEl = currentLetterEl()
 
 		if (typedLetter === currentLetter) {
-			letterEl.classList.add('correct')
+			letterEl.dataset.letter = 'correct'
 			increaseScore()
 		}
 
 		if (typedLetter !== currentLetter) {
-			letterEl.classList.add('incorrect')
+			letterEl.dataset.letter = 'incorrect'
 		}
 	}
 
@@ -236,7 +236,7 @@
 </script>
 
 {#if game !== 'game over'}
-	<div class="game" data-state={game}>
+	<div class="game" data-game={game}>
 		<input
 			bind:this={inputEl}
 			bind:value={typedLetter}
@@ -331,11 +331,11 @@
 			transition: all 0.3s ease;
 		}
 
-		&[data-state='in progress'] .time {
+		&[data-game='in progress'] .time {
 			opacity: 1;
 		}
 
-		&[data-state='in progress'] .caret {
+		&[data-game='in progress'] .caret {
 			animation: none;
 		}
 
@@ -380,11 +380,11 @@
 			opacity: 0.4;
 			transition: all 0.3s ease;
 
-			&:global(.correct) {
+			&:global([data-letter='correct']) {
 				opacity: 0.8;
 			}
 
-			&:global(.incorrect) {
+			&:global([data-letter='incorrect']) {
 				color: tomato;
 				opacity: 1;
 			}

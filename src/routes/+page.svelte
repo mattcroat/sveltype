@@ -80,8 +80,11 @@
 				seconds -= 1
 			}
 
-			if (seconds === 0) {
+			if (game === 'waiting for input' || seconds === 0) {
 				clearInterval(interval)
+			}
+
+			if (seconds === 0) {
 				setGameState('game over')
 				getResults()
 			}

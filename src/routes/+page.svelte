@@ -28,6 +28,7 @@
 	let accuracy = tweened(0, { delay: 1300, duration: 1000 })
 
 	let wordsEl: HTMLDivElement
+	let letterEl: HTMLSpanElement
 	let inputEl: HTMLInputElement
 	let caretEl: HTMLDivElement
 
@@ -98,6 +99,7 @@
 	*/
 
 	function updateGameState() {
+		setLetter()
 		checkLetter()
 		nextLetter()
 		updateLine()
@@ -105,9 +107,18 @@
 		moveCaret()
 	}
 
+	function setLetter() {
+		const isWordCompleted = letterIndex > words[wordIndex].length - 1
+
+		if (!isWordCompleted) {
+			letterEl = wordsEl.children[wordIndex].children[
+				letterIndex
+			] as HTMLSpanElement
+		}
+	}
+
 	function checkLetter() {
 		const currentLetter = words[wordIndex][letterIndex]
-		const letterEl = currentLetterEl()
 
 		if (typedLetter === currentLetter) {
 			letterEl.dataset.letter = 'correct'
@@ -124,15 +135,11 @@
 	}
 
 	function nextLetter() {
-		const currentWordLength = words[wordIndex].length - 1
-
-		if (letterIndex < currentWordLength) {
-			letterIndex += 1
-		}
+		letterIndex += 1
 	}
 
 	function updateLine() {
-		const wordEl = currentWordEl()
+		const wordEl = wordsEl.children[wordIndex]
 		const wordsY = wordsEl.getBoundingClientRect().y
 		const wordY = wordEl.getBoundingClientRect().y
 
@@ -146,18 +153,8 @@
 	}
 
 	function moveCaret() {
-		const { offsetTop, offsetLeft, offsetWidth } = currentLetterEl()
-		const currentWordLength = words[wordIndex].length - 1
-		const caretOffsetTop = 4
-
-		if (letterIndex !== currentWordLength) {
-			caretEl.style.top = `${offsetTop + caretOffsetTop}px`
-			caretEl.style.left = `${offsetLeft}px`
-		}
-
-		if (letterIndex === currentWordLength) {
-			caretEl.style.left = `${offsetLeft + offsetWidth}px`
-		}
+		caretEl.style.top = `${letterEl.offsetTop}px`
+		caretEl.style.left = `${letterEl.offsetLeft + letterEl.offsetWidth}px`
 	}
 
 	/*
@@ -217,16 +214,18 @@
 		return words.reduce((count, word) => count + word.length, 0)
 	}
 
-	function currentWordEl() {
-		return wordsEl.children[wordIndex] as HTMLSpanElement
-	}
-
-	function currentLetterEl() {
-		return wordsEl.children[wordIndex].children[letterIndex] as HTMLSpanElement
-	}
-
 	function focusInput() {
 		inputEl.focus()
+	}
+
+	function debug() {
+		console.log({
+			letterIndex,
+			wordIndex,
+			letterEl,
+			letter: letterEl.innerText,
+			wordLength: words[wordIndex].length - 1,
+		})
 	}
 
 	/* Get words and focus input when you load the page */

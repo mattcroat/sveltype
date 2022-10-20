@@ -50,18 +50,6 @@
 		}
 	}
 
-	function nextWord() {
-		const isNotFirstLetter = letterIndex !== 0
-		const isOneLetterWord = words[wordIndex].length === 1
-
-		if (isNotFirstLetter || isOneLetterWord) {
-			wordIndex += 1
-			letterIndex = 0
-			increaseScore()
-			moveCaret()
-		}
-	}
-
 	/*
 		Start game
 	*/
@@ -138,6 +126,22 @@
 		letterIndex += 1
 	}
 
+	function nextWord() {
+		const isNotFirstLetter = letterIndex !== 0
+		const isOneLetterWord = words[wordIndex].length === 1
+
+		if (isNotFirstLetter || isOneLetterWord) {
+			wordIndex += 1
+			letterIndex = 0
+			increaseScore()
+			moveCaret()
+		}
+	}
+
+	function resetLetter() {
+		typedLetter = ''
+	}
+
 	function updateLine() {
 		const wordEl = wordsEl.children[wordIndex]
 		const wordsY = wordsEl.getBoundingClientRect().y
@@ -146,10 +150,6 @@
 		if (wordY > wordsY) {
 			wordEl.scrollIntoView({ block: 'center' })
 		}
-	}
-
-	function resetLetter() {
-		typedLetter = ''
 	}
 
 	function moveCaret() {
@@ -371,6 +371,16 @@
 			border-right: 1px solid var(--primary);
 			animation: caret 1s infinite;
 			transition: all 0.2s ease;
+
+			@keyframes caret {
+				0%,
+				to {
+					opacity: 0;
+				}
+				50% {
+					opacity: 1;
+				}
+			}
 		}
 	}
 
@@ -387,16 +397,6 @@
 
 		.play {
 			margin-top: 1rem;
-		}
-	}
-
-	@keyframes caret {
-		0%,
-		to {
-			opacity: 0;
-		}
-		50% {
-			opacity: 1;
 		}
 	}
 </style>

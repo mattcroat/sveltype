@@ -134,7 +134,7 @@
 	function updateLine() {
 		const wordEl = currentWordEl()
 		const wordsY = wordsEl.getBoundingClientRect().y
-		const thresholdY = 402
+		const wordY = wordEl.getBoundingClientRect().y
 
 		if (wordY > wordsY) {
 			wordEl.scrollIntoView({ block: 'center' })
@@ -252,7 +252,7 @@
 
 		{#key toggleReset}
 			<div in:blur|local bind:this={wordsEl} class="words">
-				{#each words as word (word)}
+				{#each words as word}
 					<span class="word">
 						{#each word as letter}
 							<span class="letter">{letter}</span>
@@ -341,7 +341,7 @@
 		--lines: 3;
 
 		width: 100%;
-		max-height: calc(var(--line-height) * var(--lines) * 1.4);
+		max-height: calc(var(--line-height) * var(--lines) * 1.42);
 		display: flex;
 		flex-wrap: wrap;
 		gap: 0.6em;

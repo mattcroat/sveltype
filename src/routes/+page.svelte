@@ -133,10 +133,10 @@
 
 	function updateLine() {
 		const wordEl = currentWordEl()
-		const wordPosition = wordEl.getBoundingClientRect()
+		const wordsY = wordsEl.getBoundingClientRect().y
 		const thresholdY = 402
 
-		if (wordPosition.y > thresholdY) {
+		if (wordY > wordsY) {
 			wordEl.scrollIntoView({ block: 'center' })
 		}
 	}

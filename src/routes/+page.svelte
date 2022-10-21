@@ -138,10 +138,6 @@
 		}
 	}
 
-	function resetLetter() {
-		typedLetter = ''
-	}
-
 	function updateLine() {
 		const wordEl = wordsEl.children[wordIndex]
 		const wordsY = wordsEl.getBoundingClientRect().y
@@ -152,8 +148,13 @@
 		}
 	}
 
+	function resetLetter() {
+		typedLetter = ''
+	}
+
 	function moveCaret() {
-		caretEl.style.top = `${letterEl.offsetTop}px`
+		const offset = 4
+		caretEl.style.top = `${letterEl.offsetTop + offset}px`
 		caretEl.style.left = `${letterEl.offsetLeft + letterEl.offsetWidth}px`
 	}
 
@@ -171,14 +172,18 @@
 		return Math.floor(correctLetters / word / minutes)
 	}
 
+	function getResults() {
+		$wordsPerMinute = getWordsPerMinute()
+		$accuracy = getAccuracy()
+	}
+
 	function getAccuracy() {
 		const totalLetters = getTotalLetters(words)
 		return Math.floor((correctLetters / totalLetters) * 100)
 	}
 
-	function getResults() {
-		$wordsPerMinute = getWordsPerMinute()
-		$accuracy = getAccuracy()
+	function getTotalLetters(words: Word[]) {
+		return words.reduce((count, word) => count + word.length, 0)
 	}
 
 	/*
@@ -208,10 +213,6 @@
 	async function getWords(limit: number) {
 		const response = await fetch(`/api/words?limit=${limit}`)
 		words = await response.json()
-	}
-
-	function getTotalLetters(words: Word[]) {
-		return words.reduce((count, word) => count + word.length, 0)
 	}
 
 	function focusInput() {

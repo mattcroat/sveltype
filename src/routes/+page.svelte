@@ -231,7 +231,7 @@
 
 	/* Get words and focus input when you load the page */
 
-	onMount(async () => {
+	onMount(() => {
 		getWords(100)
 		focusInput()
 	})
